@@ -1,0 +1,1017 @@
+{
+  "info": {
+    "_postman_id": "aa8f38c5-c3e4-47e6-bc61-7bbb63ac440c",
+    "name": "NNEC+ SEI v8",
+    "description": "v8 - R03c captura hash acesso_externo_gerenciar do procedimento_trabalhar",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "47451474"
+  },
+  "item": [
+    {
+      "name": "01 - GET Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var sid = '', rid = '';",
+              "pm.response.headers.all().forEach(function(h) {",
+              "    if (h.key.toLowerCase() === 'set-cookie') {",
+              "        var ms = h.value.match(/PHPSESSID=([^;]+)/);",
+              "        if (ms && ms[1] !== 'deleted') sid = ms[1];",
+              "        var mr = h.value.match(/ROUTEID=([^;]+)/);",
+              "        if (mr) rid = mr[1];",
+              "    }",
+              "});",
+              "if (!sid) { try { var j = pm.cookies.toObject(); if (j.PHPSESSID) sid = j.PHPSESSID; if (j.ROUTEID) rid = j.ROUTEID; } catch(e) {} }",
+              "if (sid) { pm.collectionVariables.set('PHPSESSID', sid); console.log('[01] PHPSESSID:', sid); }",
+              "if (rid) { pm.collectionVariables.set('ROUTEID', rid); console.log('[01] ROUTEID:', rid); }",
+              "pm.test('status 200', function() { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "Accept",
+            "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+          }
+        ],
+        "url": {
+          "raw": "https://www.sei.mg.gov.br/sip/login.php?sigla_orgao_sistema=GOVMG&sigla_sistema=SEI",
+          "protocol": "https",
+          "host": [
+            "www",
+            "sei",
+            "mg",
+            "gov",
+            "br"
+          ],
+          "path": [
+            "sip",
+            "login.php"
+          ],
+          "query": [
+            {
+              "key": "sigla_orgao_sistema",
+              "value": "GOVMG"
+            },
+            {
+              "key": "sigla_sistema",
+              "value": "SEI"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - POST Login",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var s = pm.collectionVariables.get('PHPSESSID');",
+              "var r = pm.collectionVariables.get('ROUTEID') || '';",
+              "pm.request.headers.upsert({key: 'Cookie', value: 'PHPSESSID=' + s + (r ? '; ROUTEID=' + r : '')});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var loc = pm.response.headers.get('Location');",
+              "console.log('LOGIN LOCATION: ' + loc);",
+              "if (loc && !loc.startsWith('http')) { loc = 'https://www.sei.mg.gov.br' + (loc.startsWith('/') ? '' : '/') + loc; }",
+              "pm.collectionVariables.set('LOCATION_INIT', loc || '');",
+              "pm.test('302 login ok', function() { pm.response.to.have.status(302); });"
+            ]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "Accept",
+            "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+          },
+          {
+            "key": "Referer",
+            "value": "https://www.sei.mg.gov.br/sip/login.php?sigla_orgao_sistema=GOVMG&sigla_sistema=SEI"
+          },
+          {
+            "key": "Origin",
+            "value": "https://www.sei.mg.gov.br"
+          },
+          {
+            "key": "Cookie",
+            "value": "PHPSESSID={{PHPSESSID}}; ROUTEID={{ROUTEID}}"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "txtUsuario",
+              "value": "60905732308"
+            },
+            {
+              "key": "pwdSenha",
+              "value": "Sejusp2023*"
+            },
+            {
+              "key": "selOrgao",
+              "value": "24"
+            },
+            {
+              "key": "hdnAcao",
+              "value": "2"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://www.sei.mg.gov.br/sip/login.php?sigla_orgao_sistema=GOVMG&sigla_sistema=SEI",
+          "protocol": "https",
+          "host": [
+            "www",
+            "sei",
+            "mg",
+            "gov",
+            "br"
+          ],
+          "path": [
+            "sip",
+            "login.php"
+          ],
+          "query": [
+            {
+              "key": "sigla_orgao_sistema",
+              "value": "GOVMG"
+            },
+            {
+              "key": "sigla_sistema",
+              "value": "SEI"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - GET inicializar.php",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var s = pm.collectionVariables.get('PHPSESSID');",
+              "var r = pm.collectionVariables.get('ROUTEID') || '';",
+              "pm.request.headers.upsert({key: 'Cookie', value: 'PHPSESSID=' + s + (r ? '; ROUTEID=' + r : '')});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "console.log('STATUS 03: ' + pm.response.status);",
+              "pm.response.headers.all().forEach(function(h) {",
+              "    if (h.key.toLowerCase() === 'set-cookie') {",
+              "        var ms = h.value.match(/PHPSESSID=([^;]+)/);",
+              "        if (ms) { pm.collectionVariables.set('PHPSESSID_SEI', ms[1]); console.log('PHPSESSID_SEI: ' + ms[1]); }",
+              "        var mr = h.value.match(/ROUTEID=([^;]+)/);",
+              "        if (mr) { pm.collectionVariables.set('ROUTEID', mr[1]); }",
+              "    }",
+              "});",
+              "var loc = pm.response.headers.get('Location');",
+              "if (loc) {",
+              "    if (!loc.startsWith('http')) { loc = 'https://www.sei.mg.gov.br/sei/' + loc; }",
+              "    pm.collectionVariables.set('URL_PROCEDIMENTO_CONTROLAR', loc);",
+              "    var mh = loc.match(/infra_hash=([a-fA-F0-9]+)/);",
+              "    if (mh) { pm.collectionVariables.set('INFRA_HASH_INICIAL', mh[1]); console.log('INFRA_HASH_INICIAL: ' + mh[1]); }",
+              "}",
+              "if (!pm.collectionVariables.get('PHPSESSID_SEI')) { pm.collectionVariables.set('PHPSESSID_SEI', pm.collectionVariables.get('PHPSESSID')); }",
+              "pm.test('302 ok', function() { pm.response.to.have.status(302); });"
+            ]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "PHPSESSID={{PHPSESSID}}; ROUTEID={{ROUTEID}}"
+          }
+        ],
+        "url": {
+          "raw": "{{LOCATION_INIT}}",
+          "host": [
+            "{{LOCATION_INIT}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03b - GET procedimento_controlar",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var s = pm.collectionVariables.get('PHPSESSID_SEI');",
+              "var r = pm.collectionVariables.get('ROUTEID') || '';",
+              "console.log('[03b PRE] PHPSESSID_SEI:', s, '| ROUTEID:', r);",
+              "pm.request.headers.upsert({key: 'Cookie', value: 'PHPSESSID=' + s + (r ? '; ROUTEID=' + r : '') + '; SIP_U_GOVMG_SEI=24; GOVMG_SEI_60905732308_menu_mostrar=S'});",
+              "pm.request.headers.upsert({key: 'User-Agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36'});",
+              "pm.request.headers.upsert({key: 'Accept', value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'});",
+              "pm.request.headers.upsert({key: 'Referer', value: 'https://www.sei.mg.gov.br/sei/inicializar.php'});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "console.log('[03b] STATUS: ' + pm.response.status);",
+              "pm.response.headers.all().forEach(function(h) {",
+              "    if (h.key.toLowerCase() === 'set-cookie') {",
+              "        var ms = h.value.match(/PHPSESSID=([^;]+)/);",
+              "        if (ms) { pm.collectionVariables.set('PHPSESSID_SEI', ms[1]); }",
+              "        var mr = h.value.match(/ROUTEID=([^;]+)/);",
+              "        if (mr) { pm.collectionVariables.set('ROUTEID', mr[1]); }",
+              "    }",
+              "});",
+              "var html = pm.response.text().replace(/&amp;/gi, '&');",
+              "var id = pm.collectionVariables.get('ID_PROCEDIMENTO');",
+              "// Captura hash para procedimento_trabalhar",
+              "var mh = html.match(new RegExp('procedimento_trabalhar[^\"\\'][^\"\\'^]*id_procedimento=' + id + '[^\"\\'^]*infra_hash=([a-fA-F0-9]{32,})', 'i'));",
+              "if (!mh) mh = html.match(/procedimento_trabalhar[^\"'<>]*infra_hash=([a-fA-F0-9]{32,})/i);",
+              "if (mh) { pm.collectionVariables.set('INFRA_HASH_PROC_TRAB', mh[1]); console.log('[03b] INFRA_HASH_PROC_TRAB:', mh[1]); }",
+              "else { console.log('[03b] FALHA: hash procedimento_trabalhar nao encontrado'); }",
+              "pm.test('03b ok', function() { pm.expect(pm.response.code).to.be.oneOf([200, 302]); });"
+            ]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{URL_PROCEDIMENTO_CONTROLAR}}",
+          "host": [
+            "{{URL_PROCEDIMENTO_CONTROLAR}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03c - GET procedimento_trabalhar (captura hash acesso_externo)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var s = pm.collectionVariables.get('PHPSESSID_SEI');",
+              "var r = pm.collectionVariables.get('ROUTEID') || '';",
+              "var hash = pm.collectionVariables.get('INFRA_HASH_PROC_TRAB');",
+              "var id = pm.collectionVariables.get('ID_PROCEDIMENTO');",
+              "var unidade = pm.collectionVariables.get('INFRA_UNIDADE');",
+              "console.log('[03c PRE] INFRA_HASH_PROC_TRAB:', hash);",
+              "pm.request.url = 'https://www.sei.mg.gov.br/sei/controlador.php?acao=procedimento_trabalhar&acao_origem=procedimento_controlar&acao_retorno=procedimento_controlar&id_procedimento=' + id + '&infra_sistema=100000100&infra_unidade_atual=' + unidade + '&infra_hash=' + hash;",
+              "pm.request.headers.upsert({key: 'Cookie', value: 'PHPSESSID=' + s + (r ? '; ROUTEID=' + r : '') + '; SIP_U_GOVMG_SEI=24; GOVMG_SEI_60905732308_menu_mostrar=S'});",
+              "pm.request.headers.upsert({key: 'User-Agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36'});",
+              "pm.request.headers.upsert({key: 'Accept', value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'});",
+              "pm.request.headers.upsert({key: 'Referer', value: 'https://www.sei.mg.gov.br/sei/controlador.php?acao=procedimento_controlar&infra_sistema=100000100&infra_unidade_atual=' + unidade + '&infra_hash=' + hash});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "console.log('[03c] STATUS: ' + pm.response.status);",
+              "pm.response.headers.all().forEach(function(h) {",
+              "    if (h.key.toLowerCase() === 'set-cookie') {",
+              "        var ms = h.value.match(/PHPSESSID=([^;]+)/);",
+              "        if (ms) { pm.collectionVariables.set('PHPSESSID_SEI', ms[1]); }",
+              "        var mr = h.value.match(/ROUTEID=([^;]+)/);",
+              "        if (mr) { pm.collectionVariables.set('ROUTEID', mr[1]); }",
+              "    }",
+              "});",
+              "var html = pm.response.text().replace(/&amp;/gi, '&');",
+              "var id = pm.collectionVariables.get('ID_PROCEDIMENTO');",
+              "",
+              "// PRIORIDADE 1: captura hash do botao acesso_externo_gerenciar (barra de ferramentas)",
+              "var mAcesso = html.match(/acao=acesso_externo_gerenciar[^\"']*?infra_hash=([a-fA-F0-9]{32,})/i);",
+              "if (mAcesso) {",
+              "    pm.collectionVariables.set('INFRA_HASH_PROCESSO', mAcesso[1]);",
+              "    console.log('✅ [03c] INFRA_HASH_PROCESSO (acesso_externo) capturado:', mAcesso[1]);",
+              "} else {",
+              "    console.log('[03c] acesso_externo_gerenciar nao encontrado na barra. Logando todos os hrefs com hash:');",
+              "    var allHashes = [...html.matchAll(/href=[\"']([^\"']*infra_hash=[a-fA-F0-9]{32,}[^\"']*)[\"']/gi)];",
+              "    allHashes.slice(0, 5).forEach(function(m, i) { console.log('[03c] href' + i + ':', m[1].substring(0, 150)); });",
+              "}",
+              "",
+              "// PRIORIDADE 2: captura hash do iframe src procedimento_visualizar",
+              "var mVis = html.match(/src=[^>]*acao=procedimento_visualizar[^\"']*infra_hash=([a-fA-F0-9]{32,})/i);",
+              "if (mVis) {",
+              "    pm.collectionVariables.set('INFRA_HASH_PROC_VIS', mVis[1]);",
+              "    console.log('[03c] INFRA_HASH_PROC_VIS (iframe src):', mVis[1]);",
+              "} else {",
+              "    console.log('[03c] iframe procedimento_visualizar nao encontrado');",
+              "}",
+              "",
+              "pm.test('03c ok', function() { pm.expect(pm.response.code).to.be.oneOf([200, 302]); });"
+            ]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://www.sei.mg.gov.br/sei/controlador.php",
+          "protocol": "https",
+          "host": [
+            "www",
+            "sei",
+            "mg",
+            "gov",
+            "br"
+          ],
+          "path": [
+            "sei",
+            "controlador.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 - GET Formulario Acesso Externo",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var s = pm.collectionVariables.get('PHPSESSID_SEI');",
+              "var r = pm.collectionVariables.get('ROUTEID') || '';",
+              "var hashProcesso = pm.collectionVariables.get('INFRA_HASH_PROCESSO') || '';",
+              "var hash = pm.collectionVariables.get('INFRA_HASH_PROC_VIS');",
+              "var id = pm.collectionVariables.get('ID_PROCEDIMENTO');",
+              "var unidade = pm.collectionVariables.get('INFRA_UNIDADE');",
+              "console.log('[05 PRE] INFRA_HASH_PROCESSO:', hashProcesso);",
+              "console.log('[05 PRE] INFRA_HASH_PROC_VIS:', hash);",
+              "pm.request.headers.upsert({key: 'Cookie', value: 'PHPSESSID=' + s + (r ? '; ROUTEID=' + r : '') + '; SIP_U_GOVMG_SEI=24; GOVMG_SEI_60905732308_menu_mostrar=S'});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "console.log('[05] STATUS: ' + pm.response.status);",
+              "const rawHtml = pm.response.text();",
+              "const html = rawHtml.replace(/&amp;/gi,'&').replace(/&quot;/gi,'\"').replace(/&#39;/gi,\"'\").replace(/&#x27;/gi,\"'\");",
+              "console.log('[05] HTML inicio: ' + rawHtml.substring(0, 300));",
+              "var mAction = html.match(/action=[\"'][^\"']*controlador\\.php[^\"']*acesso_externo_disponibilizar[^\"']*infra_hash=([a-fA-F0-9]+)/i);",
+              "if (!mAction) mAction = html.match(/action=[\"'][^\"']*infra_hash=([a-fA-F0-9]+)[^\"']*acesso_externo_disponibilizar/i);",
+              "if (mAction) { pm.collectionVariables.set('INFRA_HASH_FORM', mAction[1]); console.log('[05] INFRA_HASH_FORM:', mAction[1]); }",
+              "else { console.log('[05] INFRA_HASH_FORM nao encontrado. Hashes: ' + JSON.stringify((html.match(/infra_hash=[a-fA-F0-9]+/g)||[]).slice(0,8))); }",
+              "var m1 = html.match(/name=[\"']hdnInfraItens[\"'][^>]*value=[\"']([^\"']*)[\"']/i)||html.match(/value=[\"']([^\"']*)[\"'][^>]*name=[\"']hdnInfraItens[\"']/i);",
+              "if (m1) { pm.collectionVariables.set('HDN_INFRA_ITENS', m1[1]); }",
+              "var m2 = html.match(/name=[\"']hdnInfraItensHash[\"'][^>]*value=[\"']([^\"']*)[\"']/i)||html.match(/value=[\"']([^\"']*)[\"'][^>]*name=[\"']hdnInfraItensHash[\"']/i);",
+              "if (m2) { pm.collectionVariables.set('HDN_INFRA_ITENS_HASH', m2[1]); }",
+              "var m3 = html.match(/name=[\"']hdnInfraNroItens[\"'][^>]*value=[\"']([^\"']*)[\"']/i)||html.match(/value=[\"']([^\"']*)[\"'][^>]*name=[\"']hdnInfraNroItens[\"']/i);",
+              "if (m3) { pm.collectionVariables.set('HDN_INFRA_NRO_ITENS', m3[1]); }",
+              "var m4 = html.match(/contato_auto_completar_acesso_externo[^\"'<>]*infra_hash=([a-fA-F0-9]+)/i)||html.match(/infra_hash=([a-fA-F0-9]+)[^\"'<>]*contato_auto_completar_acesso_externo/i);",
+              "if (m4) { pm.collectionVariables.set('INFRA_HASH_AJAX_1', m4[1]); }",
+              "var m5 = html.match(/acesso_externo_dados_destinatario[^\"'<>]*infra_hash=([a-fA-F0-9]+)/i)||html.match(/infra_hash=([a-fA-F0-9]+)[^\"'<>]*acesso_externo_dados_destinatario/i);",
+              "if (m5) { pm.collectionVariables.set('INFRA_HASH_AJAX_2', m5[1]); }",
+              "var m6 = html.match(/option[^>]+value=[\"']([^\"']*alysson[^\"']*)[\"']/i);",
+              "if (!m6) { var selBlock = html.match(/name=[\"']selEmailUnidade[\"'][\\s\\S]{0,800}?<\\/select>/i); if (selBlock) { var fo = selBlock[0].match(/option[^>]+value=[\"']([^\"']+)[\"']/i); if (fo) m6=fo; } }",
+              "if (m6) { pm.collectionVariables.set('SEL_EMAIL_UNIDADE', m6[1]); }",
+              "pm.test('200 ok', function() { pm.response.to.have.status(200); });",
+              "pm.test('INFRA_HASH_FORM ok', function() { pm.expect(pm.collectionVariables.get('INFRA_HASH_FORM')).to.not.be.empty; });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "Accept",
+            "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+          },
+          {
+            "key": "Referer",
+            "value": "https://www.sei.mg.gov.br/sei/controlador.php?acao=procedimento_trabalhar&id_procedimento={{ID_PROCEDIMENTO}}&infra_sistema=100000100&infra_unidade_atual={{INFRA_UNIDADE}}&infra_hash={{INFRA_HASH_PROC_TRAB}}"
+          }
+        ],
+        "url": {
+          "raw": "https://www.sei.mg.gov.br/sei/controlador.php?acao=acesso_externo_gerenciar&acao_origem=procedimento_trabalhar&acao_retorno=procedimento_trabalhar&id_procedimento={{ID_PROCEDIMENTO}}&arvore=1&infra_sistema=100000100&infra_unidade_atual={{INFRA_UNIDADE}}&infra_hash={{INFRA_HASH_PROCESSO}}",
+          "protocol": "https",
+          "host": [
+            "www",
+            "sei",
+            "mg",
+            "gov",
+            "br"
+          ],
+          "path": [
+            "sei",
+            "controlador.php"
+          ],
+          "query": [
+            {
+              "key": "acao",
+              "value": "acesso_externo_gerenciar"
+            },
+            {
+              "key": "acao_origem",
+              "value": "procedimento_trabalhar"
+            },
+            {
+              "key": "acao_retorno",
+              "value": "procedimento_trabalhar"
+            },
+            {
+              "key": "id_procedimento",
+              "value": "{{ID_PROCEDIMENTO}}"
+            },
+            {
+              "key": "arvore",
+              "value": "1"
+            },
+            {
+              "key": "infra_sistema",
+              "value": "100000100"
+            },
+            {
+              "key": "infra_unidade_atual",
+              "value": "{{INFRA_UNIDADE}}"
+            },
+            {
+              "key": "infra_hash",
+              "value": "{{INFRA_HASH_PROCESSO}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "06 - POST AJAX Autocomplete",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var s = pm.collectionVariables.get('PHPSESSID_SEI');",
+              "var r = pm.collectionVariables.get('ROUTEID') || '';",
+              "pm.request.headers.upsert({key: 'Cookie', value: 'PHPSESSID=' + s + (r ? '; ROUTEID=' + r : '') + '; SIP_U_GOVMG_SEI=24; GOVMG_SEI_60905732308_menu_mostrar=S'});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "console.log('[06] STATUS: ' + pm.response.status);",
+              "var xml = pm.response.text();",
+              "console.log('[06] BODY:', xml.substring(0, 500));",
+              "var m = xml.match(/<item[^>]+id=[\"'](\\d+)[\"']/i);",
+              "if (m) {",
+              "    pm.collectionVariables.set('HDN_ID_CONTATO', m[1]);",
+              "    var md = xml.match(/descricao=[\"']([^\"']+)[\"']/i)||xml.match(/nome=[\"']([^\"']+)[\"']/i);",
+              "    if (md) { pm.collectionVariables.set('TXT_DESTINATARIO', md[1]); }",
+              "    else { pm.collectionVariables.set('TXT_DESTINATARIO', pm.collectionVariables.get('EMAIL_EXTERNO')); }",
+              "    pm.test('contato ok: ' + m[1], function() { pm.expect(m[1]).to.not.be.empty; });",
+              "} else {",
+              "    pm.test('contato encontrado', function() { throw new Error('Sem item no XML. Body: ' + xml.substring(0,200)); });",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "Accept",
+            "value": "*/*"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Referer",
+            "value": "https://www.sei.mg.gov.br/sei/controlador.php?acao=acesso_externo_gerenciar&id_procedimento={{ID_PROCEDIMENTO}}&infra_sistema=100000100&infra_unidade_atual={{INFRA_UNIDADE}}&infra_hash={{INFRA_HASH_PROCESSO}}"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "palavras_pesquisa",
+              "value": "{{EMAIL_EXTERNO}}"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://www.sei.mg.gov.br/sei/controlador_ajax.php?acao_ajax=contato_auto_completar_acesso_externo&infra_sistema=100000100&infra_unidade_atual={{INFRA_UNIDADE}}&infra_hash={{INFRA_HASH_AJAX_1}}",
+          "protocol": "https",
+          "host": [
+            "www",
+            "sei",
+            "mg",
+            "gov",
+            "br"
+          ],
+          "path": [
+            "sei",
+            "controlador_ajax.php"
+          ],
+          "query": [
+            {
+              "key": "acao_ajax",
+              "value": "contato_auto_completar_acesso_externo"
+            },
+            {
+              "key": "infra_sistema",
+              "value": "100000100"
+            },
+            {
+              "key": "infra_unidade_atual",
+              "value": "{{INFRA_UNIDADE}}"
+            },
+            {
+              "key": "infra_hash",
+              "value": "{{INFRA_HASH_AJAX_1}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "07 - POST AJAX Destinatario",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var s = pm.collectionVariables.get('PHPSESSID_SEI');",
+              "var r = pm.collectionVariables.get('ROUTEID') || '';",
+              "pm.request.headers.upsert({key: 'Cookie', value: 'PHPSESSID=' + s + (r ? '; ROUTEID=' + r : '') + '; SIP_U_GOVMG_SEI=24; GOVMG_SEI_60905732308_menu_mostrar=S'});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "console.log('[07] STATUS: ' + pm.response.status);",
+              "var xml = pm.response.text();",
+              "console.log('[07] BODY:', xml.substring(0, 300));",
+              "var m = xml.match(/<complemento[^>]+nome=[\"']IdUsuarioExterno[\"'][^>]*>([^<]+)<\\/complemento>/i);",
+              "if (!m) m = xml.match(/IdUsuarioExterno[^>\"']*[\"']([^\"']+)[\"']/i);",
+              "if (m) {",
+              "    pm.collectionVariables.set('HDN_ID_USUARIO_EXTERNO', m[1]);",
+              "    pm.test('IdUsuarioExterno ok: ' + m[1], function() { pm.expect(m[1]).to.not.be.empty; });",
+              "} else {",
+              "    pm.test('IdUsuarioExterno encontrado', function() { throw new Error('Sem IdUsuarioExterno. Body: ' + xml.substring(0,200)); });",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "Accept",
+            "value": "*/*"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Referer",
+            "value": "https://www.sei.mg.gov.br/sei/controlador.php?acao=acesso_externo_gerenciar&id_procedimento={{ID_PROCEDIMENTO}}&infra_sistema=100000100&infra_unidade_atual={{INFRA_UNIDADE}}&infra_hash={{INFRA_HASH_PROCESSO}}"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "id_procedimento",
+              "value": "{{ID_PROCEDIMENTO}}"
+            },
+            {
+              "key": "id_contato",
+              "value": "{{HDN_ID_CONTATO}}"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://www.sei.mg.gov.br/sei/controlador_ajax.php?acao_ajax=acesso_externo_dados_destinatario&infra_sistema=100000100&infra_unidade_atual={{INFRA_UNIDADE}}&infra_hash={{INFRA_HASH_AJAX_2}}",
+          "protocol": "https",
+          "host": [
+            "www",
+            "sei",
+            "mg",
+            "gov",
+            "br"
+          ],
+          "path": [
+            "sei",
+            "controlador_ajax.php"
+          ],
+          "query": [
+            {
+              "key": "acao_ajax",
+              "value": "acesso_externo_dados_destinatario"
+            },
+            {
+              "key": "infra_sistema",
+              "value": "100000100"
+            },
+            {
+              "key": "infra_unidade_atual",
+              "value": "{{INFRA_UNIDADE}}"
+            },
+            {
+              "key": "infra_hash",
+              "value": "{{INFRA_HASH_AJAX_2}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "08 - POST Disponibilizar Acesso Externo",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var s = pm.collectionVariables.get('PHPSESSID_SEI');",
+              "var r = pm.collectionVariables.get('ROUTEID') || '';",
+              "pm.request.headers.upsert({key: 'Cookie', value: 'PHPSESSID=' + s + (r ? '; ROUTEID=' + r : '') + '; SIP_U_GOVMG_SEI=24; GOVMG_SEI_60905732308_menu_mostrar=S'});",
+              "console.log('=== VARIAVEIS FINAIS ===');",
+              "['ID_PROCEDIMENTO','INFRA_HASH_PROCESSO','INFRA_HASH_FORM','HDN_ID_CONTATO','HDN_ID_USUARIO_EXTERNO','HDN_INFRA_ITENS','HDN_INFRA_ITENS_HASH','HDN_INFRA_NRO_ITENS','SEL_EMAIL_UNIDADE','TXT_DESTINATARIO','EMAIL_EXTERNO'].forEach(function(k){console.log(k+': ['+pm.collectionVariables.get(k)+']');});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "console.log('[08] STATUS FINAL: ' + pm.response.status);",
+              "var loc = pm.response.headers.get('Location') || '';",
+              "console.log('[08] LOCATION FINAL:', loc);",
+              "if (pm.response.code === 302 && loc.includes('resultado=1')) {",
+              "    pm.test('✅ SUCESSO! Acesso externo disponibilizado!', function() { pm.expect(loc).to.include('resultado=1'); });",
+              "} else {",
+              "    var body = pm.response.text();",
+              "    pm.test('Resposta recebida', function() { pm.expect([200,302]).to.include(pm.response.code); });",
+              "    console.log('[08] BODY (500): ' + body.substring(0, 500));",
+              "}"
+            ]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "Accept",
+            "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+          },
+          {
+            "key": "Referer",
+            "value": "https://www.sei.mg.gov.br/sei/controlador.php?acao=acesso_externo_gerenciar&id_procedimento={{ID_PROCEDIMENTO}}&infra_sistema=100000100&infra_unidade_atual={{INFRA_UNIDADE}}&infra_hash={{INFRA_HASH_PROCESSO}}"
+          },
+          {
+            "key": "Origin",
+            "value": "https://www.sei.mg.gov.br"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "hdnInfraTipoPagina",
+              "value": "2"
+            },
+            {
+              "key": "selEmailUnidade",
+              "value": "{{SEL_EMAIL_UNIDADE}}"
+            },
+            {
+              "key": "txtDestinatario",
+              "value": "{{TXT_DESTINATARIO}}"
+            },
+            {
+              "key": "hdnIdContato",
+              "value": "{{HDN_ID_CONTATO}}"
+            },
+            {
+              "key": "hdnEmailDestinatario",
+              "value": "{{EMAIL_EXTERNO}}"
+            },
+            {
+              "key": "txaMotivo",
+              "value": "{{MOTIVO}}"
+            },
+            {
+              "key": "rdoTipo",
+              "value": "I"
+            },
+            {
+              "key": "hdnProtocolos",
+              "value": ""
+            },
+            {
+              "key": "hdnSeries",
+              "value": ""
+            },
+            {
+              "key": "txtDias",
+              "value": "{{DIAS}}"
+            },
+            {
+              "key": "pwdSenha",
+              "value": "{{SENHA}}"
+            },
+            {
+              "key": "hdnIdParticipante",
+              "value": ""
+            },
+            {
+              "key": "hdnIdUsuarioExterno",
+              "value": "{{HDN_ID_USUARIO_EXTERNO}}"
+            },
+            {
+              "key": "hdnFlag",
+              "value": "1"
+            },
+            {
+              "key": "hdnInfraNroItens",
+              "value": "{{HDN_INFRA_NRO_ITENS}}"
+            },
+            {
+              "key": "hdnInfraItemId",
+              "value": ""
+            },
+            {
+              "key": "hdnInfraItens",
+              "value": "{{HDN_INFRA_ITENS}}"
+            },
+            {
+              "key": "hdnInfraItensHash",
+              "value": "{{HDN_INFRA_ITENS_HASH}}"
+            },
+            {
+              "key": "hdnInfraItensSelecionados",
+              "value": ""
+            },
+            {
+              "key": "hdnInfraSelecoes",
+              "value": "Infra"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://www.sei.mg.gov.br/sei/controlador.php?acao=acesso_externo_disponibilizar&acao_origem=acesso_externo_gerenciar&acao_retorno=acesso_externo_gerenciar&arvore=1&id_procedimento={{ID_PROCEDIMENTO}}&infra_sistema=100000100&infra_unidade_atual={{INFRA_UNIDADE}}&infra_hash={{INFRA_HASH_FORM}}",
+          "protocol": "https",
+          "host": [
+            "www",
+            "sei",
+            "mg",
+            "gov",
+            "br"
+          ],
+          "path": [
+            "sei",
+            "controlador.php"
+          ],
+          "query": [
+            {
+              "key": "acao",
+              "value": "acesso_externo_disponibilizar"
+            },
+            {
+              "key": "acao_origem",
+              "value": "acesso_externo_gerenciar"
+            },
+            {
+              "key": "acao_retorno",
+              "value": "acesso_externo_gerenciar"
+            },
+            {
+              "key": "arvore",
+              "value": "1"
+            },
+            {
+              "key": "id_procedimento",
+              "value": "{{ID_PROCEDIMENTO}}"
+            },
+            {
+              "key": "infra_sistema",
+              "value": "100000100"
+            },
+            {
+              "key": "infra_unidade_atual",
+              "value": "{{INFRA_UNIDADE}}"
+            },
+            {
+              "key": "infra_hash",
+              "value": "{{INFRA_HASH_FORM}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "PHPSESSID",
+      "value": ""
+    },
+    {
+      "key": "PHPSESSID_SEI",
+      "value": ""
+    },
+    {
+      "key": "ROUTEID",
+      "value": ""
+    },
+    {
+      "key": "LOCATION_INIT",
+      "value": ""
+    },
+    {
+      "key": "URL_PROCEDIMENTO_CONTROLAR",
+      "value": ""
+    },
+    {
+      "key": "INFRA_HASH_INICIAL",
+      "value": ""
+    },
+    {
+      "key": "INFRA_HASH_PROCESSO",
+      "value": ""
+    },
+    {
+      "key": "INFRA_HASH_FORM",
+      "value": ""
+    },
+    {
+      "key": "INFRA_HASH_AJAX_1",
+      "value": ""
+    },
+    {
+      "key": "INFRA_HASH_AJAX_2",
+      "value": ""
+    },
+    {
+      "key": "HDN_INFRA_ITENS",
+      "value": ""
+    },
+    {
+      "key": "HDN_INFRA_ITENS_HASH",
+      "value": ""
+    },
+    {
+      "key": "HDN_INFRA_NRO_ITENS",
+      "value": ""
+    },
+    {
+      "key": "HDN_ID_CONTATO",
+      "value": ""
+    },
+    {
+      "key": "TXT_DESTINATARIO",
+      "value": ""
+    },
+    {
+      "key": "HDN_ID_USUARIO_EXTERNO",
+      "value": ""
+    },
+    {
+      "key": "SEL_EMAIL_UNIDADE",
+      "value": ""
+    },
+    {
+      "key": "FRAME_ARVORE_URL",
+      "value": ""
+    },
+    {
+      "key": "ID_PROCEDIMENTO",
+      "value": "930359095"
+    },
+    {
+      "key": "INFRA_UNIDADE",
+      "value": "110015072"
+    },
+    {
+      "key": "EMAIL_EXTERNO",
+      "value": "alyssonsantos.x@gmail.com"
+    },
+    {
+      "key": "EMAIL_UNIDADE",
+      "value": "alysson.lima@seguranca.mg.gov.br"
+    },
+    {
+      "key": "MOTIVO",
+      "value": "Envio de nota fiscal - NNEC+"
+    },
+    {
+      "key": "DIAS",
+      "value": "120"
+    },
+    {
+      "key": "SENHA",
+      "value": "Sejusp2023*"
+    },
+    {
+      "key": "INFRA_HASH_PROC_VIS",
+      "value": ""
+    },
+    {
+      "key": "INFRA_HASH_PROC_TRAB",
+      "value": ""
+    }
+  ]
+}
